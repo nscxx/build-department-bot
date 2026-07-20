@@ -1,0 +1,47 @@
+project:
+  department: "{{DEPARTMENT}}"
+  bot_name: "{{BOT_NAME}}"
+  mode: "{{MODE}}"
+  status: "draft"
+  created_on: "{{DATE}}"
+
+ownership:
+  content_owner: "{{OWNER}}"
+  product_owner: "待填写"
+  platform_owner: "待填写"
+  test_owner: "待填写"
+  human_handoff_owner: "待填写"
+  release_approver: "待填写"
+
+scope:
+  target_users: "待填写"
+  channels: "待填写：单聊/群聊/门户"
+  allowed_topics:
+    - "待填写"
+  prohibited_topics:
+    - "知识库未批准的业务结论"
+    - "个人敏感信息"
+    - "越权操作"
+  approved_source: "{{APPROVED_SOURCE}}"
+  source_freeze_date: "待填写"
+
+response_contract:
+  candidate_count: {{CANDIDATE_COUNT}}
+  fallback_text: "{{FALLBACK_TEXT}}"
+  answer_policy: "只使用 approved FAQ；标准答案不解释、不推测、不改写"
+  internal_details_visible: false
+
+pilot:
+  named_test_group: "待填写"
+  start_date: "待填写"
+  end_date: "待填写"
+  success_metrics:
+    wrong_answer_rate: "0% 为目标，出现即复盘"
+    exact_answer_success: "待填写"
+    fallback_rate: "观察指标，不单独作为好坏结论"
+    group_context_incidents: "0 为目标"
+  rollback_version: "待填写"
+
+open_decisions:
+  - "确认人工承接渠道和服务时间"
+  - "确认平台是否支持引用消息、裸序号和群聊上下文隔离"
