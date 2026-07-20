@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="将部门已批准的知识材料转成安全、可测试、可回滚的企业内部机器人。">
+  <meta name="theme-color" content="#123B2A">
+  <title>部门机器人创建器 · Build Department Bot</title>
+  <style>
+    :root {
+      --ink: #10231a;
+      --muted: #5f7067;
+      --paper: #f6f8f4;
+      --white: #ffffff;
+      --green: #123b2a;
+      --lime: #c8f24a;
+      --blue: #d8e7ff;
+      --line: #d8ded8;
+      --soft: #edf2ec;
+      --danger: #8c3329;
+      --shadow: 0 26px 70px rgba(18, 59, 42, .12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(rgba(18, 59, 42, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(18, 59, 42, .035) 1px, transparent 1px),
+        var(--paper);
+      background-size: 32px 32px;
+      font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    :focus-visible { outline: 3px solid #7aa5ff; outline-offset: 3px; }
+
+    .shell { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 24px 0;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 750; letter-spacing: -.02em; }
+    .mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      color: var(--lime);
+      background: var(--green);
+      border-radius: 11px 11px 11px 3px;
+      font: 800 18px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .nav-links { display: flex; align-items: center; gap: 24px; color: var(--muted); font-size: 14px; }
+    .nav-links a { text-decoration: none; }
+    .nav-links a:hover { color: var(--ink); }
+
+    .hero { padding: 72px 0 76px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 70px; align-items: center; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; color: var(--green); font-size: 13px; font-weight: 760; letter-spacing: .08em; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 30px; height: 3px; background: var(--lime); box-shadow: 0 0 0 1px var(--green); }
+    h1 { margin: 22px 0 24px; max-width: 780px; font-size: clamp(46px, 6.6vw, 86px); line-height: .98; letter-spacing: -.065em; font-weight: 850; }
+    h1 span { position: relative; color: var(--green); white-space: nowrap; }
+    h1 span::after { content: ""; position: absolute; left: 0; right: 0; bottom: .02em; height: .12em; background: var(--lime); z-index: -1; transform: rotate(-1deg); }
+    .lead { max-width: 620px; margin: 0; color: var(--muted); font-size: 19px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+    .button {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 20px;
+      border: 1px solid var(--green);
+      border-radius: 12px;
+      color: var(--white);
+      background: var(--green);
+      text-decoration: none;
+      font: 720 15px/1 inherit;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .button:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(18, 59, 42, .18); }
+    .button.secondary { color: var(--green); background: transparent; }
+    .button.secondary:hover { background: var(--white); }
+
+    .contract {
+      position: relative;
+      padding: 28px;
+      color: #eaf3ec;
+      background: var(--green);
+      border-radius: 24px 24px 24px 7px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .contract::after {
+      content: "SAFE";
+      position: absolute;
+      right: -18px;
+      bottom: -40px;
+      color: rgba(200, 242, 74, .08);
+      font: 900 108px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: -.1em;
+    }
+    .contract-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 30px; }
+    .contract-head strong { color: var(--lime); font: 700 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
+    .status { display: inline-flex; align-items: center; gap: 7px; color: #cbd8d0; font-size: 12px; }
+    .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 5px rgba(200, 242, 74, .12); }
+    .rule { display: grid; grid-template-columns: 36px 1fr; gap: 13px; align-items: start; padding: 17px 0; border-top: 1px solid rgba(255,255,255,.13); }
+    .rule code { color: var(--lime); font: 700 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .rule b { display: block; margin-bottom: 3px; font-size: 16px; }
+    .rule small { color: #afc2b6; font-size: 13px; }
+
+    .strip { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(255,255,255,.52); }
+    .strip-inner { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .stat { padding: 22px 24px; border-left: 1px solid var(--line); }
+    .stat:first-child { border-left: 0; }
+    .stat b { display: block; color: var(--green); font-size: 28px; line-height: 1.1; letter-spacing: -.04em; }
+    .stat span { color: var(--muted); font-size: 13px; }
+
+    section { padding: 92px 0; }
+    .section-head { display: grid; grid-template-columns: .7fr 1.3fr; gap: 40px; align-items: end; margin-bottom: 44px; }
+    .kicker { color: var(--green); font: 750 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em; }
+    h2 { margin: 10px 0 0; font-size: clamp(32px, 4.2vw, 54px); line-height: 1.08; letter-spacing: -.045em; }
+    .section-head p { margin: 0; color: var(--muted); font-size: 17px; }
+
+    .install-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .install-card { display: flex; flex-direction: column; min-height: 320px; padding: 28px; background: var(--white); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 10px 40px rgba(18,59,42,.06); }
+    .install-card.recommended { border-color: var(--green); box-shadow: 7px 7px 0 var(--lime); }
+    .card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .tag { padding: 4px 9px; color: var(--green); background: var(--lime); border-radius: 100px; font-size: 11px; font-weight: 800; }
+    .install-card h3 { margin: 28px 0 8px; font-size: 23px; letter-spacing: -.03em; }
+    .install-card p { margin: 0; color: var(--muted); font-size: 14px; }
+    .codebox { position: relative; margin-top: 20px; padding: 18px 56px 18px 18px; min-height: 112px; color: #e8f1ea; background: #17261e; border-radius: 12px; overflow-wrap: anywhere; font: 13px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .copy {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 8px;
+      color: #e8f1ea;
+      background: rgba(255,255,255,.08);
+      cursor: pointer;
+    }
+    .copy:hover { background: rgba(255,255,255,.15); }
+    .copy svg { width: 17px; height: 17px; }
+    .copy-note { margin-top: auto !important; padding-top: 18px; color: var(--green) !important; font-weight: 700; }
+
+    .pipeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+    .stage { min-height: 240px; padding: 26px; background: var(--white); }
+    .stage-num { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 60px; color: var(--green); background: var(--soft); border-radius: 50%; font: 800 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .stage h3 { margin: 0 0 7px; font-size: 18px; }
+    .stage p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .outcomes { display: grid; grid-template-columns: 1.2fr .8fr; gap: 20px; }
+    .artifact-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; padding: 1px; background: var(--line); border-radius: 18px; overflow: hidden; }
+    .artifact { display: flex; gap: 14px; align-items: flex-start; padding: 22px; background: var(--white); }
+    .artifact svg { flex: 0 0 auto; width: 21px; color: var(--green); }
+    .artifact b { display: block; font-size: 15px; }
+    .artifact small { color: var(--muted); font-size: 12px; }
+    .guardrail { padding: 30px; color: #f7f2ed; background: var(--danger); border-radius: 18px 18px 5px 18px; }
+    .guardrail .kicker { color: #ffd2c8; }
+    .guardrail h3 { margin: 18px 0 24px; font-size: 30px; line-height: 1.1; letter-spacing: -.04em; }
+    .guardrail ul { margin: 0; padding: 0; list-style: none; }
+    .guardrail li { padding: 12px 0 12px 26px; border-top: 1px solid rgba(255,255,255,.18); position: relative; font-size: 14px; }
+    .guardrail li::before { content: "×"; position: absolute; left: 2px; color: #ffd2c8; font-weight: 900; }
+
+    .try-card { padding: 42px; background: var(--blue); border: 1px solid #b7ccf1; border-radius: 24px; }
+    .try-card h2 { max-width: 720px; margin: 0; }
+    .try-card p { max-width: 720px; color: #425674; }
+    .try-card .codebox { min-height: auto; margin-top: 28px; }
+
+    footer { padding: 30px 0 50px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    .footer-row { display: flex; justify-content: space-between; gap: 20px; }
+
+    .toast { position: fixed; left: 50%; bottom: 26px; z-index: 10; transform: translate(-50%, 20px); padding: 11px 16px; color: white; background: var(--green); border-radius: 10px; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: .2s ease; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 900px) {
+      .hero, .section-head, .outcomes { grid-template-columns: 1fr; }
+      .hero { padding-top: 44px; gap: 42px; }
+      .strip-inner, .pipeline { grid-template-columns: 1fr 1fr; }
+      .stat:nth-child(3) { border-left: 0; border-top: 1px solid var(--line); }
+      .stat:nth-child(4) { border-top: 1px solid var(--line); }
+      .stage-num { margin-bottom: 34px; }
+    }
+    @media (max-width: 650px) {
+      .shell { width: min(100% - 24px, 1160px); }
+      .nav-links a:not(.github) { display: none; }
+      .hero { padding-bottom: 54px; }
+      h1 { font-size: 48px; }
+      .install-grid, .artifact-list, .pipeline { grid-template-columns: 1fr; }
+      .strip-inner { grid-template-columns: 1fr 1fr; }
+      .stat, .stat:first-child { border-top: 1px solid var(--line); border-left: 0; }
+      .stat:nth-child(even) { border-left: 1px solid var(--line); }
+      section { padding: 68px 0; }
+      .section-head { gap: 18px; }
+      .try-card { padding: 28px 20px; }
+      .footer-row { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell nav">
+    <div class="brand"><span class="mark">H→</span><span>部门机器人创建器</span></div>
+    <nav class="nav-links" aria-label="主导航">
+      <a href="#install">安装</a>
+      <a href="#method">方法</a>
+      <a href="#outputs">交付物</a>
+      <a class="github" href="https://github.com/nscxx/build-department-bot">GitHub ↗</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="shell hero">
+      <div>
+        <div class="eyebrow">From approved knowledge to internal bot</div>
+        <h1>让每个部门，拥有一个<span>答得稳</span>的机器人。</h1>
+        <p class="lead">把已经批准的 FAQ、制度和流程材料，转成安全、可测试、可回滚的机器人配置包。它不会为了显得聪明而越界。</p>
+        <div class="hero-actions">
+          <a class="button" href="#install">一键安装 Skill <span aria-hidden="true">↓</span></a>
+          <a class="button secondary" href="https://github.com/nscxx/build-department-bot/archive/refs/heads/main.zip">下载完整包</a>
+        </div>
+      </div>
+
+      <aside class="contract" aria-label="机器人安全契约">
+        <div class="contract-head"><strong>BOT CONTRACT / v1</strong><span class="status">ready for pilot</span></div>
+        <div class="rule"><code>01</code><div><b>只答已批准的内容</b><small>知识库是唯一业务事实来源。</small></div></div>
+        <div class="rule"><code>02</code><div><b>不确定就转人工</b><small>宁可克制，不猜测、不拼接答案。</small></div></div>
+        <div class="rule"><code>03</code><div><b>每次变更都能回去</b><small>从稳定版本做最小修改，并完成回归。</small></div></div>
+      </aside>
+    </div>
+
+    <div class="strip">
+      <div class="shell strip-inner">
+        <div class="stat"><b>3 层</b><span>知识库 · 提示词 · 工作流</span></div>
+        <div class="stat"><b>12 类</b><span>上线前最低测试覆盖</span></div>
+        <div class="stat"><b>1 次</b><span>上传材料即可生成配置包</span></div>
+        <div class="stat"><b>0 猜测</b><span>知识库外固定转人工</span></div>
+      </div>
+    </div>
+
+    <section id="install">
+      <div class="shell">
+        <div class="section-head">
+          <div><span class="kicker">INSTALL</span><h2>两种安装方式</h2></div>
+          <p>推荐直接把链接交给 Codex。它会使用标准安装器下载 Skill，并在下一轮对话中生效。</p>
+        </div>
+        <div class="install-grid">
+          <article class="install-card recommended">
+            <div class="card-top"><span class="kicker">给 Codex</span><span class="tag">推荐</span></div>
+            <h3>复制一句话</h3>
+            <p>粘贴到 Codex 对话框，无需手动下载或解压。</p>
+            <div class="codebox" data-copy="请安装这个 Skill：https://github.com/nscxx/build-department-bot/tree/main/skills/build-department-bot">请安装这个 Skill：https://github.com/nscxx/build-department-bot/tree/main/skills/build-department-bot<button class="copy" aria-label="复制 Codex 安装指令"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
+            <p class="copy-note">安装后，在下一轮使用 $build-department-bot</p>
+          </article>
+
+          <article class="install-card">
+            <div class="card-top"><span class="kicker">命令行</span></div>
+            <h3>运行标准安装器</h3>
+            <p>适合熟悉终端、需要确认安装路径的同事。</p>
+            <div class="codebox" data-copy="python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py --repo nscxx/build-department-bot --path skills/build-department-bot">python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py --repo nscxx/build-department-bot --path skills/build-department-bot<button class="copy" aria-label="复制命令行安装指令"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
+            <p class="copy-note">公开仓库默认采用直接下载，无需 Git 权限</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="method">
+      <div class="shell">
+        <div class="section-head">
+          <div><span class="kicker">METHOD</span><h2>从材料到内测</h2></div>
+          <p>把复杂项目压缩成四个责任清晰的阶段。任何阶段没有通过，都不进入下一步。</p>
+        </div>
+        <div class="pipeline">
+          <article class="stage"><span class="stage-num">01</span><h3>确定边界</h3><p>确认负责人、唯一来源、允许范围、兜底渠道和内测目标。</p></article>
+          <article class="stage"><span class="stage-num">02</span><h3>整理知识</h3><p>拆成原子 FAQ，保留批准原文，冲突与缺失进入待确认清单。</p></article>
+          <article class="stage"><span class="stage-num">03</span><h3>生成配置</h3><p>分别生成知识库、提示词与最小工作流，不让三层互相污染。</p></article>
+          <article class="stage"><span class="stage-num">04</span><h3>测试发布</h3><p>写下期望答案，执行 12 类测试，保留稳定版本后小范围内测。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="outputs">
+      <div class="shell">
+        <div class="section-head">
+          <div><span class="kicker">OUTPUTS</span><h2>一次生成完整配置包</h2></div>
+          <p>不是只给一段提示词，而是交付一个能审批、能测试、能运营的机器人项目。</p>
+        </div>
+        <div class="outcomes">
+          <div class="artifact-list">
+            <div class="artifact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><div><b>规范化知识库</b><small>原子 FAQ、状态、负责人、来源与范围</small></div></div>
+            <div class="artifact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><div><b>系统提示词</b><small>命中、候选、兜底、输出边界</small></div></div>
+            <div class="artifact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><path d="M8.6 7.5l2.2 7M15.4 7.5l-2.2 7"/></svg><div><b>最小工作流</b><small>确定性分流、统一输出和失败处理</small></div></div>
+            <div class="artifact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><div><b>12 类测试矩阵</b><small>精确、追问、序号、并发、注入与回滚</small></div></div>
+            <div class="artifact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-5 4 3 5-7"/></svg><div><b>内测运营手册</b><small>指标、缺陷归因与最小变更流程</small></div></div>
+            <div class="artifact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><div><b>发布与验收单</b><small>审批、备份、已知限制和回滚版本</small></div></div>
+          </div>
+          <aside class="guardrail">
+            <span class="kicker">NON-NEGOTIABLE</span>
+            <h3>为了安全，它会主动少做三件事。</h3>
+            <ul>
+              <li>不使用外部知识补充业务结论</li>
+              <li>不把多个标准答案拼成新答案</li>
+              <li>不在未经确认时发布或执行外部动作</li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell try-card">
+        <span class="kicker">START A PROJECT</span>
+        <h2>上传部门材料，然后把这一句话交给 Codex。</h2>
+        <p>只需要补充部门、机器人名称、内容负责人、唯一知识来源和人工渠道。其余项目结构由 Skill 自动生成。</p>
+        <div class="codebox" data-copy="请使用 $build-department-bot，为【部门名称】创建内部机器人。机器人叫【名称】，内容负责人是【姓名/部门】，唯一允许使用的知识来源是我上传的材料。安全优先，默认采用精确 FAQ 模式；找不到时统一回复【人工渠道话术】。请生成完整配置包并完成校验，但先不要发布到生产环境。">请使用 $build-department-bot，为【部门名称】创建内部机器人。机器人叫【名称】，内容负责人是【姓名/部门】，唯一允许使用的知识来源是我上传的材料。安全优先，默认采用精确 FAQ 模式；找不到时统一回复【人工渠道话术】。请生成完整配置包并完成校验，但先不要发布到生产环境。<button class="copy" aria-label="复制项目创建指令"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-row">
+      <span>Build Department Bot · 从真实内测项目沉淀的安全创建方法</span>
+      <span>通用模板不替代本部门内容审批</span>
+    </div>
+  </footer>
+
+  <div class="toast" role="status" aria-live="polite">已复制到剪贴板</div>
+  <script>
+    const toast = document.querySelector('.toast');
+    let toastTimer;
+    async function copyText(value) {
+      try {
+        await navigator.clipboard.writeText(value);
+      } catch (_) {
+        const input = document.createElement('textarea');
+        input.value = value;
+        input.style.position = 'fixed';
+        input.style.opacity = '0';
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        input.remove();
+      }
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+    document.querySelectorAll('.copy').forEach(button => {
+      button.addEventListener('click', () => copyText(button.parentElement.dataset.copy));
+    });
+  </script>
+</body>
+</html>
