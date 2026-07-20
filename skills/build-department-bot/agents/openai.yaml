@@ -1,0 +1,5 @@
+interface:
+  display_name: "部门机器人创建器"
+  short_description: "从知识材料生成安全、可测试、可回滚的部门机器人配置包"
+  default_prompt: "Use $build-department-bot to turn my department materials into a safe, testable bot package."
+
